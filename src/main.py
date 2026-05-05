@@ -39,17 +39,13 @@ while rodando:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
-        if evento.type == pygame.KEYDOWN:
-            if evento.key == pygame.K_RIGHT:
-                velocidade_x = 5
-            if evento.key == pygame.K_LEFT:
-                velocidade_x = -5
-        if evento.type == pygame.KEYUP:
-            if evento.key in (pygame.K_RIGHT, pygame.K_LEFT):
-                velocidade_x = 0
-
 
     # 2. Update (lógica do jogo vai aqui)
+    teclas = pygame.key.get_pressed()
+    if teclas[pygame.K_RIGHT]:
+        jogador_um_x += 5
+    if teclas[pygame.K_LEFT]:
+        jogador_um_x -= 5
     jogador_um_x += velocidade_x
     # 3. Draw
     tela.fill(cores['Preto'])
