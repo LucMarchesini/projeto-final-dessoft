@@ -1,5 +1,4 @@
 import pygame
-import sys
 
 # --- Inicialização ---
 pygame.init()
@@ -27,7 +26,6 @@ while True:
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             pygame.quit()
-            sys.exit()
 
     # 2. Update (lógica do jogo vai aqui)
 
