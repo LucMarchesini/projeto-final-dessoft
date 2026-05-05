@@ -17,9 +17,10 @@ rodando = True
 
 # --- Inicialização dos assets (sem animações por enquanto)
 assets = {}
-assets['background'] = pygame.image.load('sprites/background').convert()
-assets['jogador_um'] = pygame.image.load('sprites\Brawler-Girl\Idle').convert_alpha()
-assets['jogador_um'] = pygame.transform.scale(assets['jogador_um'], (20, 100))
+assets['background'] = pygame.image.load('sprites/background.png').convert()
+assets['background'] = pygame.transform.scale(assets['background'], (largura_janela,altura_janela))
+assets['jogador_um'] = pygame.image.load('sprites\Brawler-Girl\Idle\idle1.png').convert_alpha()
+assets['jogador_um'] = pygame.transform.scale(assets['jogador_um'], (450, 300))
 # --- Cores ---
 cores={
     'Preto': (0, 0, 0),
@@ -28,6 +29,7 @@ cores={
 
 # --- Loop principal ---
 while rodando:
+    clock.tick(FPS)
 
     # 1. Eventos
     for evento in pygame.event.get():
@@ -38,9 +40,9 @@ while rodando:
 
     # 3. Draw
     tela.fill(cores['Preto'])
-
+    tela.blit(assets['background'], (0, 0))
+    tela.blit(assets['jogador_um'], (0, 0))
     pygame.display.update()
-    clock.tick(FPS)
 
 # --- Finalização ---
 pygame.quit()
