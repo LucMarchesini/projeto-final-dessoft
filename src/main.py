@@ -69,45 +69,97 @@ def tela_inicial(assets):
         clock.tick(FPS)
 
 def loop_jogo(assets):
+    socando_um = False
+    socando_dois = False
     rodando = True
+    
     jogador_um_x = 0
     jogador_um_y = 420
+    jogador_dois_x = 500
+    jogador_dois_y = 420
     
-    gravidade = 0
-    no_chao = True
+    vel_y_um = 0
+    vel_y_dois = 0
+    no_chao_um = True
+    no_chao_dois = True
 
     cores = {
         'Preto': (0, 0, 0),
         'Branco': (255, 255, 255)
     }
-
+    caixa = pygame.Rect(700, 400, 50, 50)
     while rodando:
+        hit_box_um = pygame.Rect(jogador_um_x+160, jogador_um_y+80, 110, 220) 
+        hit_box_soco = pygame.Rect(jogador_um_x+282, jogador_um_y+132, 80, 25) #depois cada um vai ter que virar uma variavel, porque vai variar os sprites
+        hit_box_dois = pygame.Rect(jogador_dois_x+160, jogador_dois_y+80, 110, 220) 
+        hit_box_soco_dois = pygame.Rect(jogador_dois_x+282, jogador_dois_y+132, 80, 25) #depois cada um vai ter que virar uma variavel, porque vai variar os sprites
+        
         clock.tick(FPS)
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
                 rodando = False
 
+        delta_x_um = 0
+        delta_x_dois = 0
+        #Jogador 1
         teclas = pygame.key.get_pressed()
         if teclas[pygame.K_RIGHT]:
-            jogador_um_x += 5
+            delta_x_um += 5
         if teclas[pygame.K_LEFT]:
-            jogador_um_x -= 5
-        if teclas[pygame.K_UP] and no_chao:
-            gravidade = -15
-            no_chao = False
-
-        gravidade += 0.8
-        jogador_um_y += gravidade
+            delta_x_um -= 5
+        if teclas[pygame.K_UP] and no_chao_um:
+            vel_y_um = -15
+            no_chao_um = False
+        if teclas[pygame.K_SPACE]:
+            socando_um = True
+        else:
+            socando_um = False
+        vel_y_um += 0.8
+        jogador_um_y += vel_y_um
         if jogador_um_y >= 390:
             jogador_um_y = 390
-            gravidade = 0
-            no_chao = True
-        hit_box_um = pygame.Rect(jogador_um_x+160, jogador_um_y+80, 110, 220) 
-        tela.fill(cores['Preto'])
+            vel_y_um = 0
+            no_chao_um = True
+        #jogador 2
+        if teclas[pygame.K_d]:
+            delta_x_dois += 5
+        if teclas[pygame.K_a]:
+            delta_x_dois -= 5
+        if teclas[pygame.K_w] and no_chao_dois:
+            vel_y_dois = -15
+            no_chao_dois = False
+        if teclas[pygame.K_f]:
+            socando_dois = True
+        else:
+            socando_dois = False
+        vel_y_dois += 0.8
+        jogador_dois_y += vel_y_dois
+        if jogador_dois_y >= 390:
+            jogador_dois_y = 390
+            vel_y_dois = 0
+            no_chao_dois = True
+        jogador_um_x+=delta_x_um
+        jogador_dois_x+=delta_x_dois
+
         tela.blit(assets['background'], (0, 0))
-        pygame.draw.rect(tela, (0, 200, 0), hit_box_um)
-        tela.blit(assets['jogador_um'], (jogador_um_x, jogador_um_y))
-        
+        if socando_um:
+            pygame.draw.rect(tela, (0, 255, 0), hit_box_um)
+            pygame.draw.rect(tela, (255, 0, 0), hit_box_soco)
+            tela.blit(assets['jogador_um_soco'], (jogador_um_x, jogador_um_y))
+
+        else:
+            pygame.draw.rect(tela, (0, 255, 0), hit_box_um)
+            tela.blit(assets['jogador_um'], (jogador_um_x, jogador_um_y))
+
+        if socando_dois:
+            pygame.draw.rect(tela, (0, 255, 0), hit_box_dois)
+            pygame.draw.rect(tela, (255, 0, 0), hit_box_soco_dois)
+            tela.blit(assets['jogador_dois_soco'], (jogador_dois_x, jogador_dois_y))
+
+        else:
+            pygame.draw.rect(tela, (0, 255, 0), hit_box_dois)
+            tela.blit(assets['jogador_dois'], (jogador_dois_x, jogador_dois_y))
+            
         pygame.display.update()
 
 def tela_ranking(assets):
