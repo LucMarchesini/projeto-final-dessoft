@@ -2,7 +2,7 @@ import pygame
 import random
 import constantes as C
 from assets import carregar_assets
-import telas
+import telas as T
 
 pygame.init()
 
@@ -17,10 +17,10 @@ assets = carregar_assets()
 
 # --- Funções (recebem assets como parâmetro) ---
 def tela_inicial(assets):
-    botao_jogar = pygame.Rect(360, 285, 560, 80)
-    botao_ranking = pygame.Rect(360, 375, 560, 80)
-    botao_configuracoes = pygame.Rect(360, 465, 560, 80)
-    botao_sair = pygame.Rect(360, 555, 560, 80)
+    botao_jogar = pygame.Rect(*C.BOTAO_JOGAR_POS, C.BOTAO_LARGURA, C.BOTAO_ALTURA)
+    botao_ranking = pygame.Rect(*C.BOTAO_RANKING_POS, C.BOTAO_LARGURA, C.BOTAO_ALTURA)
+    botao_configuracoes = pygame.Rect(*C.BOTAO_CONFIG_POS, C.BOTAO_LARGURA, C.BOTAO_ALTURA)
+    botao_sair = pygame.Rect(*C.BOTAO_SAIR_POS, C.BOTAO_LARGURA, C.BOTAO_ALTURA)
 
     while True:
         tela.blit(assets['inicial'], (0, 0))
@@ -38,11 +38,11 @@ def tela_inicial(assets):
                     if botao_jogar.collidepoint(event.pos):
                         loop_jogo(assets)
                     elif botao_ranking.collidepoint(event.pos):
-                        telas.ranking(tela, assets)
+                        T.tela_ranking(tela, assets)
                     elif botao_configuracoes.collidepoint(event.pos):
-                        telas.configuracoes(tela, assets)
+                        T.tela_configuracoes(tela, assets)
                     elif botao_sair.collidepoint(event.pos):
-                        pygame.quit()
+                        return C.SAIR
 
         pygame.display.flip()
         clock.tick(FPS)
@@ -68,10 +68,10 @@ def loop_jogo(assets):
     }
     caixa = pygame.Rect(700, 400, 50, 50)
     while rodando:
-        hit_box_um = pygame.Rect(jogador_um_x+160, jogador_um_y+80, 110, 220) 
-        hit_box_soco = pygame.Rect(jogador_um_x+282, jogador_um_y+132, 80, 25) #depois cada um vai ter que virar uma variavel, porque vai variar os sprites
-        hit_box_dois = pygame.Rect(jogador_dois_x+160, jogador_dois_y+80, 110, 220) 
-        hit_box_soco_dois = pygame.Rect(jogador_dois_x+282, jogador_dois_y+132, 80, 25) #depois cada um vai ter que virar uma variavel, porque vai variar os sprites
+        hit_box_um = pygame.Rect(jogador_um_x + C.P1_HITBOX_OFFSET[0], jogador_um_y + C.P1_HITBOX_OFFSET[1], *C.P1_HITBOX_SIZE) 
+        hit_box_soco = pygame.Rect(jogador_um_x + C.P1_SOCO_OFFSET[0], jogador_um_y + C.P1_SOCO_OFFSET[1], *C.P1_SOCO_SIZE)   #depois cada um vai ter que virar uma variavel, porque vai variar os sprites
+        hit_box_dois = pygame.Rect(jogador_dois_x + C.P2_HITBOX_OFFSET[0], jogador_dois_y + C.P2_HITBOX_OFFSET[1], *C.P2_HITBOX_SIZE)
+        hit_box_soco_dois = pygame.Rect(jogador_um_x + C.P1_SOCO_OFFSET[0], jogador_um_y + C.P1_SOCO_OFFSET[1], *C.P1_SOCO_SIZE)   #depois cada um vai ter que virar uma variavel, porque vai variar os sprites
         
         clock.tick(FPS)
         for evento in pygame.event.get():
@@ -140,6 +140,31 @@ def loop_jogo(assets):
             tela.blit(assets['jogador_dois'], (jogador_dois_x, jogador_dois_y))
             
         pygame.display.update()
+
+# -- Loop Principal Atualizado ---
+estado = C.MENU
+rodando = True
+
+while rodando:
+    if estado == C.MENU:
+        estado = T.tela_inicial(tela, assets)
+
+    elif estado == C.JOGO:
+        estado = T.tela_jogo(tela, assets)
+
+    elif estado == C.RANKING:
+        estado = T.tela_ranking(tela, assets)
+
+    elif estado == C.CONFIG:
+        estado = T.tela_configuracoes(tela, assets)
+
+    elif estado == C.SAIR:
+        rodando = False
+
+    pygame.display.flip()
+    clock.tick(FPS)
+
+pygame.quit()
 
 # --- Execução ---
 tela_inicial(assets)
