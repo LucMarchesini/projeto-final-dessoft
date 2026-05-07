@@ -4,6 +4,13 @@ ALTURA_JANELA = 720
 FPS = 60
 TITULO = "Corner Fight"
 
+# --- Telas ---
+MENU = "menu"
+JOGO = "jogo"
+RANKING = "ranking"
+CONFIG = "configuracoes"
+SAIR = "sair"
+
 # --- Física ---
 GRAVIDADE = 0.8
 IMPULSO_PULO = -15
