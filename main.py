@@ -1,48 +1,19 @@
 import pygame
 import random
+import constantes as C
+from assets import carregar_assets
+import telas
 
 pygame.init()
 
-LARGURA_JANELA = 1280
-ALTURA_JANELA = 720
-
-tela = pygame.display.set_mode((LARGURA_JANELA, ALTURA_JANELA))                 # Cria a janela do jogo com o tamanho definido dentro dos parênteses
+tela = pygame.display.set_mode((C.LARGURA_JANELA, C.ALTURA_JANELA))                 # Cria a janela do jogo com o tamanho definido dentro dos parênteses
 pygame.display.set_caption("Corner Fight")                                      # Cria o título da janela
 
 clock = pygame.time.Clock()                                                     # Cria um objeto de controle de tempo, usado para limitar os quadros por segundo
 FPS = 60                                                                        # Define a variável FPS
 
 # --- Carrega todos os assets uma vez só ---
-assets = {}
-
-assets['inicial'] = pygame.image.load('assets/sprites/tela_inicial.png').convert()
-assets['inicial'] = pygame.transform.scale(assets['inicial'], (LARGURA_JANELA, ALTURA_JANELA))
-
-assets['background'] = pygame.image.load('assets/sprites/background.png').convert()
-assets['background'] = pygame.transform.scale(assets['background'], (LARGURA_JANELA, ALTURA_JANELA))
-
-assets['jogador_um'] = pygame.image.load(r'assets/sprites/Brawler-Girl/Idle/idle1.png').convert_alpha()
-assets['jogador_um'] = pygame.transform.scale(assets['jogador_um'], (450, 300))
-
-assets['jogador_dois'] = assets['jogador_um']
-
-assets['jogador_um_soco'] = pygame.image.load(r'assets/sprites/Brawler-Girl/Jab/jab3.png').convert_alpha()
-assets['jogador_um_soco'] = pygame.transform.scale(assets['jogador_um_soco'], (450, 300))
-
-assets['jogador_dois_soco'] = assets['jogador_um_soco']
-
-assets['tela_ranking'] = pygame.image.load('assets/sprites/tela_ranking.png').convert()
-assets['tela_ranking'] = pygame.transform.scale(assets['tela_ranking'], (LARGURA_JANELA, ALTURA_JANELA))
-
-assets['tela_configuracoes'] = pygame.image.load('assets/sprites/tela_configuracoes.png').convert()
-assets['tela_configuracoes'] = pygame.transform.scale(assets['tela_configuracoes'], (LARGURA_JANELA, ALTURA_JANELA))
-
-assets['tela_personagem'] = pygame.image.load('assets/sprites/tela_personagem.png').convert()
-assets['tela_personagem'] = pygame.transform.scale(assets['tela_personagem'], (LARGURA_JANELA, ALTURA_JANELA))
-
-# --- Fontes ---
-font_title = pygame.font.SysFont("Arial", 64, bold=True)
-font_sub = pygame.font.SysFont("Arial", 28)
+assets = carregar_assets()
 
 # --- Funções (recebem assets como parâmetro) ---
 def tela_inicial(assets):
@@ -67,9 +38,9 @@ def tela_inicial(assets):
                     if botao_jogar.collidepoint(event.pos):
                         loop_jogo(assets)
                     elif botao_ranking.collidepoint(event.pos):
-                        tela_ranking(assets)
+                        telas.ranking(tela, assets)
                     elif botao_configuracoes.collidepoint(event.pos):
-                        tela_configuracoes(assets)
+                        telas.configuracoes(tela, assets)
                     elif botao_sair.collidepoint(event.pos):
                         pygame.quit()
 
@@ -169,39 +140,6 @@ def loop_jogo(assets):
             tela.blit(assets['jogador_dois'], (jogador_dois_x, jogador_dois_y))
             
         pygame.display.update()
-
-def tela_ranking(assets):
-    while True:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-        
-        tela.blit(assets['tela_ranking'], (0, 0))
-
-        pygame.display.flip()
-        clock.tick(FPS)
-
-def tela_configuracoes(assets):
-    while True:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-        
-        tela.blit(assets['tela_configuracoes'], (0, 0))
-
-        pygame.display.flip()
-        clock.tick(FPS)
-
-def tela_personagem(assets):
-    while True:
-        for evento in pygame.event.get():
-            if evento.type == pygame.QUIT:
-                pygame.quit()
-
-        tela.blit(assets['tela_personagem'], (0, 0))
-
-        pygame.display.flip()
-        clock.tick(FPS)
 
 # --- Execução ---
 tela_inicial(assets)

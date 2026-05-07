@@ -4,6 +4,9 @@ import constantes as C
 def carregar_assets():
     assets = {}
 
+    assets["font_title"] = pygame.font.SysFont(C.FONTE_PADRAO, C.TAMANHO_TITULO, bold=True)
+    assets["font_text"] = pygame.font.SysFont(C.FONTE_PADRAO, C.TAMANHO_TEXTO)
+
     assets['inicial'] = pygame.image.load('assets/sprites/tela_inicial.png').convert()
     assets['inicial'] = pygame.transform.scale(assets['inicial'], (C.LARGURA_JANELA, C.ALTURA_JANELA))
 

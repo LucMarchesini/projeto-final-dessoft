@@ -11,6 +11,11 @@ RANKING = "ranking"
 CONFIG = "configuracoes"
 SAIR = "sair"
 
+# --- Fontes ---
+FONTE_PADRAO = "Arial"
+TAMANHO_TITULO = 64
+TAMANHO_TEXTO = 28
+
 # --- Física ---
 GRAVIDADE = 0.8
 IMPULSO_PULO = -15
