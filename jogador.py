@@ -3,21 +3,22 @@ import constantes as C
 
 class Jogador:
     def __init__(self, x, y, controles, assets, tipo, vida, ataque):
-        #posição
         self.x = x
         self.y = y
 
-        #combate
         self.vida = vida
         self.ataque = ataque
         self.soco_disponivel = True
+        self.frames_soco = 0
+        self.DURACAO_SOCO = 10
+        self.cooldown_soco = 0            # <-- novo
+        self.COOLDOWN_SOCO = 30
+        self.dano_aplicado = False
 
-        #física
         self.vel_y = 0
         self.no_chao = True
         self.socando = False
 
-        #importações gerais
         self.controles = controles
         self.assets = assets
         self.tipo = tipo
@@ -34,13 +35,26 @@ class Jogador:
             self.vel_y = C.IMPULSO_PULO
             self.no_chao = False
 
-        if teclas[self.controles["soco"]]:
-            if self.soco_disponivel:
-                self.socando = True
-                self.soco_disponivel = False  # bloqueia até soltar
-            else:
-                self.socando = False
-                self.soco_disponivel = True  # libera quando soltar o botão
+        # Cooldown conta regressivamente
+        if self.cooldown_soco > 0:
+            self.cooldown_soco -= 1
+
+        # Soco só dispara se cooldown zerou
+        if teclas[self.controles["soco"]] and self.soco_disponivel and self.cooldown_soco == 0:
+            self.socando = True
+            self.soco_disponivel = False
+            self.frames_soco = self.DURACAO_SOCO
+            self.cooldown_soco = self.COOLDOWN_SOCO  # inicia o cooldown
+
+        if not teclas[self.controles["soco"]]:
+            self.soco_disponivel = True
+
+        if self.frames_soco > 0:
+            self.frames_soco -= 1
+        else:
+            self.socando = False
+            self.dano_aplicado = False
+
         self.vel_y += C.GRAVIDADE
         self.x += delta_x
         self.y += self.vel_y

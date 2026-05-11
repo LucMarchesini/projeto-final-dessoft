@@ -95,14 +95,8 @@ def loop_jogo(tela, assets, clock):
         hb_dois = jogador_dois.get_hitbox_jogador()
         hb_soco_dois = jogador_dois.get_hitbox_soco()
 
-        if jogador_um.socando:
-            if RJ.checar_soco(hb_soco_um, hb_dois):
-                print('jogador 2 tomou dano')
-                pass
-        if jogador_dois.socando:
-            if RJ.checar_soco(hb_soco_dois, hb_um):
-                print('jogador 1 tomou dano')
-                pass
+        RJ.aplicar_dano(jogador_um, jogador_dois, hb_soco_um, hb_dois)
+        RJ.aplicar_dano(jogador_dois, jogador_um, hb_soco_dois, hb_um)
         # Desenho
         tela.blit(assets['background'], (0, 0))
 

@@ -18,3 +18,8 @@ def limites_tela(jogador, largura_tela):
         jogador.x += 5 
     if hb.right > largura_tela:
         jogador.x -=5 
+def aplicar_dano(atacante, alvo, hb_soco, hb_alvo):
+    if atacante.socando and not atacante.dano_aplicado and checar_soco(hb_soco, hb_alvo):
+        alvo.vida -= atacante.ataque
+        atacante.dano_aplicado = True  # <-- bloqueia qualquer dano subsequente
+        print(f'Jogador {alvo.tipo} levou {atacante.ataque} de dano | Vida: {alvo.vida}')
