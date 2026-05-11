@@ -62,7 +62,7 @@ def loop_jogo(tela, assets, clock):
         assets=assets,
         tipo="um",
         vida=100,
-        ataque=5
+        ataque=100
     )
     jogador_dois = Jogador(
         x=C.P2_START_X,
@@ -97,6 +97,11 @@ def loop_jogo(tela, assets, clock):
 
         RJ.aplicar_dano(jogador_um, jogador_dois, hb_soco_um, hb_dois)
         RJ.aplicar_dano(jogador_dois, jogador_um, hb_soco_dois, hb_um)
+
+        vencedor = RJ.checar_fim_de_jogo(jogador_um, jogador_dois)
+        if vencedor:
+            print(f'Jogador {vencedor} venceu!')
+            return C.MENU  # por enquanto volta ao menu, depois pode virar tela de vitória
         # Desenho
         tela.blit(assets['background'], (0, 0))
 

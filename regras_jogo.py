@@ -23,3 +23,9 @@ def aplicar_dano(atacante, alvo, hb_soco, hb_alvo):
         alvo.vida -= atacante.ataque
         atacante.dano_aplicado = True  # <-- bloqueia qualquer dano subsequente
         print(f'Jogador {alvo.tipo} levou {atacante.ataque} de dano | Vida: {alvo.vida}')
+def checar_fim_de_jogo(jogador_um, jogador_dois):
+    if jogador_um.vida <= 0:
+        return "dois"  # jogador dois venceu
+    if jogador_dois.vida <= 0:
+        return "um"    # jogador um venceu
+    return None        # jogo continua
