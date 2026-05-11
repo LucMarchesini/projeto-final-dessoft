@@ -11,3 +11,10 @@ def colisao_corpo(jogador_um, jogador_dois):
         else:
             jogador_um.x += 5
             jogador_dois.x -= 5
+def limites_tela(jogador, largura_tela):
+    hb = jogador.get_hitbox_jogador()
+
+    if hb.left < 0:
+        jogador.x += 5 
+    if hb.right > largura_tela:
+        jogador.x -=5 

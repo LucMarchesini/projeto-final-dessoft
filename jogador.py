@@ -10,6 +10,7 @@ class Jogador:
         #combate
         self.vida = vida
         self.ataque = ataque
+        self.soco_disponivel = True
 
         #física
         self.vel_y = 0
@@ -33,8 +34,13 @@ class Jogador:
             self.vel_y = C.IMPULSO_PULO
             self.no_chao = False
 
-        self.socando = teclas[self.controles["soco"]]
-
+        if teclas[self.controles["soco"]]:
+            if self.soco_disponivel:
+                self.socando = True
+                self.soco_disponivel = False  # bloqueia até soltar
+            else:
+                self.socando = False
+                self.soco_disponivel = True  # libera quando soltar o botão
         self.vel_y += C.GRAVIDADE
         self.x += delta_x
         self.y += self.vel_y
