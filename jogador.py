@@ -2,14 +2,21 @@ import pygame
 import constantes as C
 
 class Jogador:
-    def __init__(self, x, y, controles, assets, tipo):
+    def __init__(self, x, y, controles, assets, tipo, vida, ataque):
+        #posição
         self.x = x
         self.y = y
 
+        #combate
+        self.vida = vida
+        self.ataque = ataque
+
+        #física
         self.vel_y = 0
         self.no_chao = True
         self.socando = False
 
+        #importações gerais
         self.controles = controles
         self.assets = assets
         self.tipo = tipo

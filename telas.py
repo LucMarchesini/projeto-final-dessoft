@@ -1,5 +1,7 @@
 import pygame
 import constantes as C
+from jogador import Jogador
+import regras_jogo as RJ
 
 def tela_ranking(tela, assets):
     while True:
@@ -52,28 +54,28 @@ def tela_inicial(tela, assets):
             elif botao_sair.collidepoint(event.pos):
                 return C.SAIR
 
-def loop_jogo(tela, assets, clock):  # <-- assinatura corrigida
-    socando_um = False
-    socando_dois = False
-    rodando = True
+def loop_jogo(tela, assets, clock):
+    jogador_um = Jogador(
+        x=C.P1_START_X,
+        y=C.P1_START_Y,
+        controles=C.P1_CONTROLES,
+        assets=assets,
+        tipo="um",
+        vida=100,
+        ataque=5
+    )
+    jogador_dois = Jogador(
+        x=C.P2_START_X,
+        y=C.P2_START_Y,
+        controles=C.P2_CONTROLES,
+        assets=assets,
+        tipo="dois",
+        vida=100,
+        ataque=5
+    )
 
-    jogador_um_x = 0
-    jogador_um_y = 420
-    jogador_dois_x = 500
-    jogador_dois_y = 420
-
-    vel_y_um = 0
-    vel_y_dois = 0
-    no_chao_um = True
-    no_chao_dois = True
-
-    while rodando:
+    while True:
         clock.tick(C.FPS)
-
-        hit_box_um = pygame.Rect(jogador_um_x + C.P1_HITBOX_OFFSET[0], jogador_um_y + C.P1_HITBOX_OFFSET[1], *C.P1_HITBOX_SIZE)
-        hit_box_soco = pygame.Rect(jogador_um_x + C.P1_SOCO_OFFSET[0], jogador_um_y + C.P1_SOCO_OFFSET[1], *C.P1_SOCO_SIZE)
-        hit_box_dois = pygame.Rect(jogador_dois_x + C.P2_HITBOX_OFFSET[0], jogador_dois_y + C.P2_HITBOX_OFFSET[1], *C.P2_HITBOX_SIZE)
-        hit_box_soco_dois = pygame.Rect(jogador_dois_x + C.P2_SOCO_OFFSET[0], jogador_dois_y + C.P2_SOCO_OFFSET[1], *C.P2_SOCO_SIZE)
 
         for evento in pygame.event.get():
             if evento.type == pygame.QUIT:
@@ -81,66 +83,36 @@ def loop_jogo(tela, assets, clock):  # <-- assinatura corrigida
             if evento.type == pygame.KEYDOWN and evento.key == pygame.K_ESCAPE:
                 return C.MENU
 
-        delta_x_um = 0
-        delta_x_dois = 0
         teclas = pygame.key.get_pressed()
+        jogador_um.atualizar(teclas)
+        jogador_dois.atualizar(teclas)
 
-        # Jogador 1
-        if teclas[pygame.K_RIGHT]:
-            delta_x_um += C.VELOCIDADE
-        if teclas[pygame.K_LEFT]:
-            delta_x_um -= C.VELOCIDADE
-        if teclas[pygame.K_UP] and no_chao_um:
-            vel_y_um = C.IMPULSO_PULO
-            no_chao_um = False
-        socando_um = teclas[pygame.K_SPACE]
+        # Hitboxes
+        hb_um = jogador_um.get_hitbox_jogador()
+        hb_soco_um = jogador_um.get_hitbox_soco()
+        hb_dois = jogador_dois.get_hitbox_jogador()
+        hb_soco_dois = jogador_dois.get_hitbox_soco()
 
-        vel_y_um += C.GRAVIDADE
-        jogador_um_y += vel_y_um
-        if jogador_um_y >= C.Y_CHAO:
-            jogador_um_y = C.Y_CHAO
-            vel_y_um = 0
-            no_chao_um = True
-
-        # Jogador 2
-        if teclas[pygame.K_d]:
-            delta_x_dois += C.VELOCIDADE
-        if teclas[pygame.K_a]:
-            delta_x_dois -= C.VELOCIDADE
-        if teclas[pygame.K_w] and no_chao_dois:
-            vel_y_dois = C.IMPULSO_PULO
-            no_chao_dois = False
-        socando_dois = teclas[pygame.K_f]
-
-        vel_y_dois += C.GRAVIDADE
-        jogador_dois_y += vel_y_dois
-        if jogador_dois_y >= C.Y_CHAO:
-            jogador_dois_y = C.Y_CHAO
-            vel_y_dois = 0
-            no_chao_dois = True
-
-        jogador_um_x += delta_x_um
-        jogador_dois_x += delta_x_dois
-
+        if jogador_um.socando:
+            if RJ.checar_soco(hb_soco_um, hb_dois):
+                print('jogador 2 tomou dano')
+                pass
+        if jogador_dois.socando:
+            if RJ.checar_soco(hb_soco_dois, hb_um):
+                print('jogador 1 tomou dano')
+                pass
         # Desenho
         tela.blit(assets['background'], (0, 0))
 
-        if socando_um:
-            pygame.draw.rect(tela, C.VERDE, hit_box_um)
-            pygame.draw.rect(tela, C.VERMELHO, hit_box_soco)
-            tela.blit(assets['jogador_um_soco'], (jogador_um_x, jogador_um_y))
-        else:
-            pygame.draw.rect(tela, C.VERDE, hit_box_um)
-            tela.blit(assets['jogador_um'], (jogador_um_x, jogador_um_y))
+        if C.DEBUG:
+            pygame.draw.rect(tela, C.VERDE, hb_um, 2)
+            pygame.draw.rect(tela, C.VERDE, hb_dois, 2)
+            if jogador_um.socando:
+                pygame.draw.rect(tela, C.VERMELHO, hb_soco_um, 2)
+            if jogador_dois.socando:
+                pygame.draw.rect(tela, C.VERMELHO, hb_soco_dois, 2)
 
-        if socando_dois:
-            pygame.draw.rect(tela, C.VERDE, hit_box_dois)
-            pygame.draw.rect(tela, C.VERMELHO, hit_box_soco_dois)
-            tela.blit(assets['jogador_dois_soco'], (jogador_dois_x, jogador_dois_y))
-        else:
-            pygame.draw.rect(tela, C.VERDE, hit_box_dois)
-            tela.blit(assets['jogador_dois'], (jogador_dois_x, jogador_dois_y))
+        jogador_um.desenhar(tela)
+        jogador_dois.desenhar(tela)
 
         pygame.display.update()
-
-    return C.MENU
