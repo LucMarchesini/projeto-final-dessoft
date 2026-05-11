@@ -86,7 +86,7 @@ def loop_jogo(tela, assets, clock):
         teclas = pygame.key.get_pressed()
         jogador_um.atualizar(teclas)
         jogador_dois.atualizar(teclas)
-
+        RJ.colisao_corpo(jogador_um, jogador_dois)
         # Hitboxes
         hb_um = jogador_um.get_hitbox_jogador()
         hb_soco_um = jogador_um.get_hitbox_soco()
