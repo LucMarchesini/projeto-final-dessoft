@@ -2,7 +2,7 @@ import pygame
 import constantes as C
 
 class Jogador:
-    def __init__(self, x, y, controles, assets, tipo, vida, ataque):
+    def __init__(self, x, y, controles, assets, personagem, tipo, vida, ataque, estado):
         self.x = x
         self.y = y
 
@@ -14,10 +14,13 @@ class Jogador:
         self.cooldown_soco = 0            # <-- novo
         self.COOLDOWN_SOCO = 30
         self.dano_aplicado = False
+        
+        self.estado = estado
+        self.personagem = personagem
 
         self.vel_y = 0
         self.no_chao = True
-        self.socando = False
+        self.socando = False                # temporário
 
         self.controles = controles
         self.assets = assets
@@ -75,8 +78,5 @@ class Jogador:
         return pygame.Rect(self.x + offset[0], self.y + offset[1], size[0], size[1])
 
     def desenhar(self, tela):
-        if self.socando:
-            sprite = self.assets['jogador_um_soco'] if self.tipo == "um" else self.assets['jogador_dois_soco']
-        else:
-            sprite = self.assets['jogador_um'] if self.tipo == "um" else self.assets['jogador_dois']
+        sprite = self.assets["personagens"][self.personagem][self.estado]
         tela.blit(sprite, (self.x, self.y))

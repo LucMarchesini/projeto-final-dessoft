@@ -54,24 +54,28 @@ def tela_inicial(tela, assets):
             elif botao_sair.collidepoint(event.pos):
                 return C.SAIR
 
-def loop_jogo(tela, assets, clock):
+def tela_luta(tela, assets, clock):
     jogador_um = Jogador(
         x=C.P1_START_X,
         y=C.P1_START_Y,
         controles=C.P1_CONTROLES,
         assets=assets,
+        personagem=C.BRAWLER_GIRL,
         tipo="um",
         vida=100,
-        ataque=100
+        ataque=100,
+        estado=C.NORMAL
     )
     jogador_dois = Jogador(
         x=C.P2_START_X,
         y=C.P2_START_Y,
         controles=C.P2_CONTROLES,
         assets=assets,
+        personagem=C.BRAWLER_GIRL,
         tipo="dois",
         vida=100,
-        ataque=5
+        ataque=5,
+        estado=C.NORMAL
     )
 
     while True:

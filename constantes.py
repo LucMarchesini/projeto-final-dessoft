@@ -13,6 +13,10 @@ RANKING = "ranking"
 CONFIG = "configuracoes"
 SAIR = "sair"
 
+# --- Coordenadas ---
+ORIGEM_X = LARGURA_JANELA // 2
+ORIGEM_Y = 0
+
 # --- Fontes ---
 FONTE_PADRAO = "Arial"
 TAMANHO_TITULO = 64
@@ -26,6 +30,13 @@ BOTAO_JOGAR_POS = (360, 285)
 BOTAO_RANKING_POS = (360, 375)
 BOTAO_CONFIG_POS = (360, 465)
 BOTAO_SAIR_POS = (360, 555)
+
+# --- Personagens ---
+BRAWLER_GIRL = "Brawler-Girl"
+
+# --- Estados ---
+NORMAL = "normal"
+SOCO = "soco"
 
 # --- Física ---
 GRAVIDADE = 0.8

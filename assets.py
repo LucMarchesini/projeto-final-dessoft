@@ -27,14 +27,12 @@ def carregar_assets():
     # --- Personagens ---
     assets["personagens"] = {}
 
-    assets['jogador_um'] = pygame.image.load(r'assets/sprites/Brawler-Girl/Idle/idle1.png').convert_alpha()
-    assets['jogador_um'] = pygame.transform.scale(assets['jogador_um'], (450, 300))
+    assets["personagens"]["Brawler-Girl"] = {}
 
-    assets['jogador_dois'] = assets['jogador_um']
+    assets["personagens"]["Brawler-Girl"]["normal"] = pygame.image.load(r'assets/sprites/Brawler-Girl/Idle/idle1.png').convert_alpha()
+    assets["personagens"]["Brawler-Girl"]["normal"] = pygame.transform.scale(assets["personagens"]["Brawler-Girl"]["normal"], (450, 300))
 
-    assets['jogador_um_soco'] = pygame.image.load(r'assets/sprites/Brawler-Girl/Jab/jab3.png').convert_alpha()
-    assets['jogador_um_soco'] = pygame.transform.scale(assets['jogador_um_soco'], (450, 300))
-
-    assets['jogador_dois_soco'] = assets['jogador_um_soco']
+    assets["personagens"]["Brawler-Girl"]["soco"] = pygame.image.load(r'assets/sprites/Brawler-Girl/Jab/jab3.png').convert_alpha()
+    assets["personagens"]["Brawler-Girl"]["soco"] = pygame.transform.scale(assets["personagens"]["Brawler-Girl"]["soco"], (450, 300))
 
     return assets

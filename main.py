@@ -20,7 +20,7 @@ while rodando:
         estado = T.tela_inicial(tela, assets)
 
     elif estado == C.JOGO:
-        estado = T.loop_jogo(tela, assets, clock)
+        estado = T.tela_luta(tela, assets, clock)
 
     elif estado == C.RANKING:
         estado = T.tela_ranking(tela, assets)
