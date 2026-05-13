@@ -45,6 +45,7 @@ class Jogador:
         # Soco só dispara se cooldown zerou
         if teclas[self.controles["soco"]] and self.soco_disponivel and self.cooldown_soco == 0:
             self.socando = True
+            self.estado = C.SOCO
             self.soco_disponivel = False
             self.frames_soco = self.DURACAO_SOCO
             self.cooldown_soco = self.COOLDOWN_SOCO  # inicia o cooldown
@@ -56,6 +57,7 @@ class Jogador:
             self.frames_soco -= 1
         else:
             self.socando = False
+            self.estado = C.NORMAL
             self.dano_aplicado = False
 
         self.vel_y += C.GRAVIDADE
