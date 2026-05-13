@@ -17,6 +17,12 @@ SAIR = "sair"
 ORIGEM_X = LARGURA_JANELA // 2
 ORIGEM_Y = 0
 
+def mundo_p_tela(x, y):
+    return x + ORIGEM_X, ALTURA_JANELA - y
+
+def tela_p_mundo(x, y):
+    return x - ORIGEM_X, ALTURA_JANELA - y
+
 # --- Fontes ---
 FONTE_PADRAO = "Arial"
 TAMANHO_TITULO = 64
@@ -33,6 +39,7 @@ BOTAO_SAIR_POS = (360, 555)
 
 # --- Personagens ---
 BRAWLER_GIRL = "Brawler-Girl"
+ENEMY_PUNK = "Enemy-Punk"
 
 # --- Estados ---
 NORMAL = "normal"
@@ -50,6 +57,19 @@ BRANCO = (255, 255, 255)
 VERDE = (0, 255, 0)
 VERMELHO = (255, 0, 0)
 
+# --- Jogadores ---                     --> transformar em dicionário futuramente
+HITBOX_OFFSET = (-480, 640)
+HITBOX_SIZE = (-530, 500)
+SOCO_OFFSET = (-358, 588)
+SOCO_SIZE = (-560, 695)
+
+DIC_HITBOXES = {
+    "HITBOX_OFFSET": (-480, 640),
+    "HITBOX_SIZE": (-530, 500),
+    "SOCO_OFFSET": (-358, 588),
+    "SOCO_SIZE": (-560, 695)
+}
+
 # --- Jogador 1 ---
 P1_CONTROLES = {
     "direita": pygame.K_RIGHT,
@@ -57,12 +77,7 @@ P1_CONTROLES = {
     "pulo": pygame.K_UP,
     "soco": pygame.K_SPACE
 }
-P1_START_X = 0
-P1_START_Y = 420
-P1_HITBOX_OFFSET = (160, 80)
-P1_HITBOX_SIZE = (110, 220)
-P1_SOCO_OFFSET = (282, 132)
-P1_SOCO_SIZE = (80, 25)
+P1_START = (-640, 300)
 
 # --- Jogador 2 ---
 P2_CONTROLES = {
@@ -71,12 +86,7 @@ P2_CONTROLES = {
     "pulo": pygame.K_w,
     "soco": pygame.K_f
 }
-P2_START_X = 500
-P2_START_Y = 420
-P2_HITBOX_OFFSET = (160, 80)
-P2_HITBOX_SIZE = (110, 220)
-P2_SOCO_OFFSET = (282, 132)
-P2_SOCO_SIZE = (80, 25)
+P2_START = (-140, 300)
 
 # --- Debug ---
 DEBUG = True

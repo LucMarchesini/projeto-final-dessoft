@@ -26,6 +26,8 @@ class Jogador:
         self.assets = assets
         self.tipo = tipo
 
+        self.hitboxes = C.DIC_HITBOXES
+
     def atualizar(self, teclas):
         delta_x = 0
 
@@ -70,13 +72,21 @@ class Jogador:
             self.no_chao = True
 
     def get_hitbox_jogador(self):
-        offset = C.P1_HITBOX_OFFSET if self.tipo == "um" else C.P2_HITBOX_OFFSET
-        size = C.P1_HITBOX_SIZE if self.tipo == "um" else C.P2_HITBOX_SIZE
+        offset = C.HITBOX_OFFSET
+        size = C.HITBOX_SIZE
+        
+        offset = C.mundo_p_tela(offset[0], offset[1])
+        size = C.mundo_p_tela(size[0], size[1])
+        
         return pygame.Rect(self.x + offset[0], self.y + offset[1], size[0], size[1])
 
     def get_hitbox_soco(self):
-        offset = C.P1_SOCO_OFFSET if self.tipo == "um" else C.P2_SOCO_OFFSET
-        size = C.P1_SOCO_SIZE if self.tipo == "um" else C.P2_SOCO_SIZE
+        offset = C.SOCO_OFFSET
+        size = C.SOCO_SIZE
+
+        offset = C.mundo_p_tela(offset[0], offset[1]) if self.tipo == "um" else C.mundo_p_tela(offset[0], offset[1])
+        size = C.mundo_p_tela(size[0], size[1])
+
         return pygame.Rect(self.x + offset[0], self.y + offset[1], size[0], size[1])
 
     def desenhar(self, tela):

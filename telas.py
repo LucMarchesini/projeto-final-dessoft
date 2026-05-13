@@ -3,6 +3,9 @@ import constantes as C
 from jogador import Jogador
 import regras_jogo as RJ
 
+C.P1_START = C.mundo_p_tela(*C.P1_START)
+C.P2_START = C.mundo_p_tela(*C.P2_START)
+
 def tela_ranking(tela, assets):
     while True:
         tela.blit(assets['tela_ranking'], (0, 0))
@@ -54,30 +57,7 @@ def tela_inicial(tela, assets):
             elif botao_sair.collidepoint(event.pos):
                 return C.SAIR
 
-def tela_luta(tela, assets, clock):
-    jogador_um = Jogador(
-        x=C.P1_START_X,
-        y=C.P1_START_Y,
-        controles=C.P1_CONTROLES,
-        assets=assets,
-        personagem=C.BRAWLER_GIRL,
-        tipo="um",
-        vida=100,
-        ataque=100,
-        estado=C.NORMAL
-    )
-    jogador_dois = Jogador(
-        x=C.P2_START_X,
-        y=C.P2_START_Y,
-        controles=C.P2_CONTROLES,
-        assets=assets,
-        personagem=C.BRAWLER_GIRL,
-        tipo="dois",
-        vida=100,
-        ataque=5,
-        estado=C.NORMAL
-    )
-
+def tela_luta(tela, assets, clock, jogador_um, jogador_dois):
     while True:
         clock.tick(C.FPS)
 
@@ -93,6 +73,7 @@ def tela_luta(tela, assets, clock):
         RJ.colisao_corpo(jogador_um, jogador_dois)
         RJ.limites_tela(jogador_um, C.LARGURA_JANELA)
         RJ.limites_tela(jogador_dois, C.LARGURA_JANELA)
+        
         # Hitboxes
         hb_um = jogador_um.get_hitbox_jogador()
         hb_soco_um = jogador_um.get_hitbox_soco()
@@ -106,6 +87,7 @@ def tela_luta(tela, assets, clock):
         if vencedor:
             print(f'Jogador {vencedor} venceu!')
             return C.MENU  # por enquanto volta ao menu, depois pode virar tela de vitória
+        
         # Desenho
         tela.blit(assets['background'], (0, 0))
 
