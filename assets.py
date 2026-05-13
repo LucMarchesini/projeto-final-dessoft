@@ -35,4 +35,12 @@ def carregar_assets():
     assets["personagens"]["Brawler-Girl"]["soco"] = pygame.image.load(r'assets/sprites/Brawler-Girl/Jab/jab3.png').convert_alpha()
     assets["personagens"]["Brawler-Girl"]["soco"] = pygame.transform.scale(assets["personagens"]["Brawler-Girl"]["soco"], (450, 300))
 
+    assets["personagens"]["Enemy-Punk"] = {}
+
+    assets["personagens"]["Enemy-Punk"]["normal"] = pygame.image.load(r'assets/sprites/Enemy-Punk/Idle/idle1.png').convert_alpha()
+    assets["personagens"]["Enemy-Punk"]["normal"] = pygame.transform.scale(assets["personagens"]["Enemy-Punk"]["normal"], (450, 300))
+
+    assets["personagens"]["Enemy-Punk"]["soco"] = pygame.image.load(r'assets/sprites/Enemy-Punk/Jab/jab3.png').convert_alpha()
+    assets["personagens"]["Enemy-Punk"]["soco"] = pygame.transform.scale(assets["personagens"]["Enemy-Punk"]["soco"], (450, 300))
+
     return assets
