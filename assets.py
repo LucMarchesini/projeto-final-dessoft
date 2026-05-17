@@ -43,4 +43,29 @@ def carregar_assets():
     assets["personagens"]["Enemy-Punk"]["soco"] = pygame.image.load(r'assets/sprites/Enemy-Punk/punch/punch3.png').convert_alpha()
     assets["personagens"]["Enemy-Punk"]["soco"] = pygame.transform.scale(assets["personagens"]["Enemy-Punk"]["soco"], (450, 300))
 
+    # --- Mascaras ---
+    # Zona do soco: superfície com a região onde o braço pode acertar
+    zona_surf = pygame.Surface((C.SPRITE_LARGURA, C.SPRITE_ALTURA), pygame.SRCALPHA)
+    zona_surf.fill((0, 0, 0, 0))
+    pygame.draw.rect(zona_surf, (255, 255, 255, 255), C.ZONA_SOCO)
+    zona_mask = pygame.mask.from_surface(zona_surf)
+    zona_mask_flip = pygame.mask.from_surface(
+        pygame.transform.flip(zona_surf, True, False)
+    )
+
+    assets["mascaras"] = {}
+    for nome, estados in assets["personagens"].items():
+        assets["mascaras"][nome] = {}
+        for estado, sprite in estados.items():
+            assets["mascaras"][nome][estado] = pygame.mask.from_surface(sprite)
+            sprite_flip = pygame.transform.flip(sprite, True, False)
+            assets["mascaras"][nome][estado + "_flip"] = pygame.mask.from_surface(sprite_flip)
+
+        # Máscara de soco = interseção do sprite de soco com a zona do braço
+        mask_soco = assets["mascaras"][nome][C.SOCO]
+        assets["mascaras"][nome][C.SOCO + "_delta"] = mask_soco.overlap_mask(zona_mask, (0, 0))
+
+        mask_soco_flip = assets["mascaras"][nome][C.SOCO + "_flip"]
+        assets["mascaras"][nome][C.SOCO + "_delta_flip"] = mask_soco_flip.overlap_mask(zona_mask_flip, (0, 0))
+
     return assets

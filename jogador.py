@@ -2,7 +2,7 @@ import pygame
 import constantes as C
 
 class Jogador:
-    def __init__(self, x, y, controles, assets, personagem, tipo, vida, ataque, estado):
+    def __init__(self, x, y, controles, assets, personagem, tipo, virado, vida, ataque, estado):
         self.x = x
         self.y = y
 
@@ -25,6 +25,7 @@ class Jogador:
         self.controles = controles
         self.assets = assets
         self.tipo = tipo
+        self.virado = virado  # True = facing right, False = facing left
 
         self.hitboxes = C.DIC_HITBOXES
 
@@ -71,24 +72,39 @@ class Jogador:
             self.vel_y = 0
             self.no_chao = True
 
+    def get_mascara_corpo(self):
+        key = self.estado if self.virado else self.estado + "_flip"
+        return self.assets["mascaras"][self.personagem][key], self.x, self.y
+
+    def get_mascara_soco(self):
+        key = C.SOCO + "_delta" if self.virado else C.SOCO + "_delta_flip"
+        return self.assets["mascaras"][self.personagem][key], self.x, self.y
+
+    def atualizar_direcao(self, outro_x):
+        self.virado = self.x < outro_x
+
     def get_hitbox_jogador(self):
         offset = C.HITBOX_OFFSET
         size = C.HITBOX_SIZE
-        
+
         offset = C.mundo_p_tela(offset[0], offset[1])
         size = C.mundo_p_tela(size[0], size[1])
-        
-        return pygame.Rect(self.x + offset[0], self.y + offset[1], size[0], size[1])
+
+        offset_x = offset[0] if self.virado else C.SPRITE_LARGURA - offset[0] - size[0]
+        return pygame.Rect(self.x + offset_x, self.y + offset[1], size[0], size[1])
 
     def get_hitbox_soco(self):
         offset = C.SOCO_OFFSET
         size = C.SOCO_SIZE
 
-        offset = C.mundo_p_tela(offset[0], offset[1]) if self.tipo == "um" else C.mundo_p_tela(offset[0], offset[1])
+        offset = C.mundo_p_tela(offset[0], offset[1])
         size = C.mundo_p_tela(size[0], size[1])
 
-        return pygame.Rect(self.x + offset[0], self.y + offset[1], size[0], size[1])
+        offset_x = offset[0] if self.virado else C.SPRITE_LARGURA - offset[0] - size[0]
+        return pygame.Rect(self.x + offset_x, self.y + offset[1], size[0], size[1])
 
     def desenhar(self, tela):
         sprite = self.assets["personagens"][self.personagem][self.estado]
+        if not self.virado:
+            sprite = pygame.transform.flip(sprite, True, False)
         tela.blit(sprite, (self.x, self.y))

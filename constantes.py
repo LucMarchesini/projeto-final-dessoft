@@ -9,6 +9,7 @@ TITULO = "Corner Fight"
 # --- Telas ---
 MENU = "menu"
 JOGO = "jogo"
+PERSONAGEM = "personagem"
 RANKING = "ranking"
 CONFIG = "configuracoes"
 SAIR = "sair"
@@ -56,6 +57,13 @@ PRETO = (0, 0, 0)
 BRANCO = (255, 255, 255)
 VERDE = (0, 255, 0)
 VERMELHO = (255, 0, 0)
+
+SPRITE_LARGURA = 450
+SPRITE_ALTURA = 300
+
+# Região dentro do sprite onde o soco pode acertar (personagem olhando para a direita).
+# (x, y, largura, altura) em pixels. Ajuste observando o overlay vermelho no DEBUG.
+ZONA_SOCO = (260, 85, 185, 90)
 
 # --- Jogadores ---                     --> transformar em dicionário futuramente
 HITBOX_OFFSET = (-480, 640)

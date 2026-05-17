@@ -15,36 +15,46 @@ assets = carregar_assets()
 
 estado = C.MENU
 rodando = True
-
-jogador_um = J.Jogador(
-    x = C.P1_START[0],
-    y = C.P1_START[1],
-    controles=C.P1_CONTROLES,
-    assets=assets,
-    personagem=C.BRAWLER_GIRL,
-    tipo="um",
-    vida=100,
-    ataque=100,
-    estado=C.NORMAL
-)
-
-jogador_dois = J.Jogador(
-    x = C.P2_START[0],
-    y = C.P2_START[1],
-    controles=C.P2_CONTROLES,
-    assets=assets,
-    personagem=C.ENEMY_PUNK,
-    tipo="dois",
-    vida=100,
-    ataque=5,
-    estado=C.NORMAL
-)
+personagem_p1 = C.BRAWLER_GIRL
+personagem_p2 = C.ENEMY_PUNK
 
 while rodando:
     if estado == C.MENU:
-        estado = T.tela_inicial(tela, assets)
+        resultado = T.tela_inicial(tela, assets)
+        if resultado is not None:
+            estado = resultado
+
+    elif estado == C.PERSONAGEM:
+        resultado = T.tela_personagem(tela, assets)
+        estado = resultado[0]
+        if estado == C.JOGO:
+            personagem_p1, personagem_p2 = resultado[1], resultado[2]
 
     elif estado == C.JOGO:
+        jogador_um = J.Jogador(
+            x=C.P1_START[0],
+            y=C.P1_START[1],
+            controles=C.P1_CONTROLES,
+            assets=assets,
+            personagem=personagem_p1,
+            tipo="um",
+            virado=True,
+            vida=100,
+            ataque=10,
+            estado=C.NORMAL
+        )
+        jogador_dois = J.Jogador(
+            x=C.P2_START[0],
+            y=C.P2_START[1],
+            controles=C.P2_CONTROLES,
+            assets=assets,
+            personagem=personagem_p2,
+            tipo="dois",
+            virado=False,
+            vida=100,
+            ataque=5,
+            estado=C.NORMAL
+        )
         estado = T.tela_luta(tela, assets, clock, jogador_um, jogador_dois)
 
     elif estado == C.RANKING:
