@@ -27,8 +27,11 @@ while rodando:
     elif estado == C.PERSONAGEM:
         resultado = T.tela_personagem(tela, assets)
         estado = resultado[0]
-        if estado == C.JOGO:
+        if estado in (C.TUTORIAL, C.JOGO):
             personagem_p1, personagem_p2 = resultado[1], resultado[2]
+
+    elif estado == C.TUTORIAL:
+        estado = T.tela_tutorial(tela, assets)
 
     elif estado == C.JOGO:
         jogador_um = J.Jogador(

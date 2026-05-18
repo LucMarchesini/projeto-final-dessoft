@@ -7,12 +7,13 @@ FPS = 60
 TITULO = "Corner Fight"
 
 # --- Telas ---
-MENU = "menu"
-JOGO = "jogo"
+MENU      = "menu"
+JOGO      = "jogo"
 PERSONAGEM = "personagem"
-RANKING = "ranking"
-CONFIG = "configuracoes"
-SAIR = "sair"
+TUTORIAL  = "tutorial"
+RANKING   = "ranking"
+CONFIG    = "configuracoes"
+SAIR      = "sair"
 
 # --- Coordenadas ---
 ORIGEM_X = LARGURA_JANELA // 2
@@ -43,8 +44,16 @@ BRAWLER_GIRL = "Brawler-Girl"
 ENEMY_PUNK = "Enemy-Punk"
 
 # --- Estados ---
-NORMAL = "normal"
-SOCO = "soco"
+NORMAL     = "normal"
+ANDANDO    = "andando"
+PULANDO    = "pulando"
+HURT       = "hurt"
+SOCO       = "soco"
+CHUTE      = "chute"
+SOCO_FORTE = "soco_forte"
+SUPER      = "super"
+
+ANIM_VELOCIDADE = 8  # frames de jogo por frame de sprite (~7 fps)
 
 # --- Física ---
 GRAVIDADE = 0.8
@@ -61,9 +70,15 @@ VERMELHO = (255, 0, 0)
 SPRITE_LARGURA = 450
 SPRITE_ALTURA = 300
 
-# Região dentro do sprite onde o soco pode acertar (personagem olhando para a direita).
-# (x, y, largura, altura) em pixels. Ajuste observando o overlay vermelho no DEBUG.
-ZONA_SOCO = (260, 85, 185, 90)
+# Zonas de golpe dentro do sprite (personagem olhando para a direita).
+# (x, y, largura, altura). Ajuste observando o overlay no DEBUG.
+ZONA_SOCO       = (260,  85, 185,  90)   # braço/soco rápido
+ZONA_SOCO_FORTE = (230,  70, 220, 110)   # soco mais largo e mais alto
+ZONA_CHUTE      = (210, 160, 240, 120)   # perna/chute (área baixa)
+
+# --- Projétil ---
+PROJETIL_VELOCIDADE = 10
+PROJETIL_RAIO       = 22
 
 # --- Jogadores ---                     --> transformar em dicionário futuramente
 HITBOX_OFFSET = (-480, 640)
@@ -80,21 +95,27 @@ DIC_HITBOXES = {
 
 # --- Jogador 1 ---
 P1_CONTROLES = {
-    "direita": pygame.K_RIGHT,
-    "esquerda": pygame.K_LEFT,
-    "pulo": pygame.K_UP,
-    "soco": pygame.K_SPACE
+    "direita":    pygame.K_RIGHT,
+    "esquerda":   pygame.K_LEFT,
+    "pulo":       pygame.K_UP,
+    "soco":       pygame.K_SPACE,
+    "chute":      pygame.K_z,
+    "soco_forte": pygame.K_x,
+    "super":      pygame.K_c,
 }
 P1_START = (-640, 300)
 
 # --- Jogador 2 ---
 P2_CONTROLES = {
-    "direita": pygame.K_d,
-    "esquerda": pygame.K_a,
-    "pulo": pygame.K_w,
-    "soco": pygame.K_f
+    "direita":    pygame.K_d,
+    "esquerda":   pygame.K_a,
+    "pulo":       pygame.K_w,
+    "soco":       pygame.K_f,
+    "chute":      pygame.K_g,
+    "soco_forte": pygame.K_h,
+    "super":      pygame.K_j,
 }
 P2_START = (-140, 300)
 
 # --- Debug ---
-DEBUG = True
+DEBUG = False

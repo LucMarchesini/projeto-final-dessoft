@@ -1,110 +1,205 @@
 import pygame
 import constantes as C
+from projetil import Projetil
+
+_ATAQUES_CORPO = [C.SOCO, C.CHUTE, C.SOCO_FORTE]
+_TODOS_ATAQUES = _ATAQUES_CORPO + [C.SUPER]
 
 class Jogador:
     def __init__(self, x, y, controles, assets, personagem, tipo, virado, vida, ataque, estado):
         self.x = x
         self.y = y
 
-        self.vida = vida
+        self.vida   = vida
         self.ataque = ataque
-        self.soco_disponivel = True
-        self.frames_soco = 0
-        self.DURACAO_SOCO = 10
-        self.cooldown_soco = 0            # <-- novo
-        self.COOLDOWN_SOCO = 30
-        self.dano_aplicado = False
-        
-        self.estado = estado
-        self.personagem = personagem
 
-        self.vel_y = 0
+        # --- Sistema de ataque ---
+        self.atacando      = False
+        self.estado_ataque = None
+        self.frames_ataque = 0
+        self.dano_aplicado = False
+        self.projetil_a_disparar = None
+
+        estados_p = assets["personagens"][personagem]
+        self.DURACOES_ATAQUE = {
+            t: len(estados_p[t]) * C.ANIM_VELOCIDADE for t in _TODOS_ATAQUES
+        }
+        self.DANOS_ATAQUE = {
+            C.SOCO:       ataque,
+            C.CHUTE:      int(ataque * 1.5),
+            C.SOCO_FORTE: ataque * 2,
+            C.SUPER:      ataque * 3,
+        }
+        self.COOLDOWNS_ATAQUE = {
+            C.SOCO:       30,
+            C.CHUTE:      40,
+            C.SOCO_FORTE: 60,
+            C.SUPER:      120,
+        }
+        self.cooldowns  = {t: 0    for t in _TODOS_ATAQUES}
+        self.disponivel = {t: True for t in _TODOS_ATAQUES}
+
+        # --- Hurt ---
+        self.frames_hurt  = 0
+        self.DURACAO_HURT = len(estados_p[C.HURT]) * C.ANIM_VELOCIDADE
+
+        # --- Animação ---
+        self.frame_anim    = 0
+        self.contador_anim = 0
+        self.estado        = estado
+        self.personagem    = personagem
+
+        # --- Física ---
+        self.vel_y   = 0
         self.no_chao = True
-        self.socando = False                # temporário
 
         self.controles = controles
-        self.assets = assets
-        self.tipo = tipo
-        self.virado = virado  # True = facing right, False = facing left
+        self.assets    = assets
+        self.tipo      = tipo
+        self.virado    = virado
+        self.hitboxes  = C.DIC_HITBOXES
 
-        self.hitboxes = C.DIC_HITBOXES
+    # ------------------------------------------------------------------
+    # Atualização principal
+    # ------------------------------------------------------------------
 
     def atualizar(self, teclas):
         delta_x = 0
-
         if teclas[self.controles["direita"]]:
             delta_x += C.VELOCIDADE
         if teclas[self.controles["esquerda"]]:
             delta_x -= C.VELOCIDADE
 
         if teclas[self.controles["pulo"]] and self.no_chao:
-            self.vel_y = C.IMPULSO_PULO
+            self.vel_y   = C.IMPULSO_PULO
             self.no_chao = False
 
-        # Cooldown conta regressivamente
-        if self.cooldown_soco > 0:
-            self.cooldown_soco -= 1
+        # Decrementar cooldowns
+        for t in _TODOS_ATAQUES:
+            if self.cooldowns[t] > 0:
+                self.cooldowns[t] -= 1
 
-        # Soco só dispara se cooldown zerou
-        if teclas[self.controles["soco"]] and self.soco_disponivel and self.cooldown_soco == 0:
-            self.socando = True
-            self.estado = C.SOCO
-            self.soco_disponivel = False
-            self.frames_soco = self.DURACAO_SOCO
-            self.cooldown_soco = self.COOLDOWN_SOCO  # inicia o cooldown
+        # Liberar flag quando tecla solta
+        for t in _TODOS_ATAQUES:
+            tecla = self.controles.get(t)
+            if tecla and not teclas[tecla]:
+                self.disponivel[t] = True
 
-        if not teclas[self.controles["soco"]]:
-            self.soco_disponivel = True
+        # Disparar novo ataque (somente se não está atacando)
+        if not self.atacando:
+            for t in _TODOS_ATAQUES:
+                tecla = self.controles.get(t)
+                if tecla and teclas[tecla] and self.disponivel[t] and self.cooldowns[t] == 0:
+                    self.atacando      = True
+                    self.estado_ataque = t
+                    self.frames_ataque = self.DURACOES_ATAQUE[t]
+                    self.cooldowns[t]  = self.COOLDOWNS_ATAQUE[t]
+                    self.disponivel[t] = False
+                    if t == C.SUPER:
+                        direcao = 1 if self.virado else -1
+                        px = self.x + C.SPRITE_LARGURA if self.virado else self.x
+                        py = self.y + 110
+                        self.projetil_a_disparar = Projetil(px, py, direcao,
+                                                            self.DANOS_ATAQUE[C.SUPER])
+                    break
 
-        if self.frames_soco > 0:
-            self.frames_soco -= 1
+        # Contar frames do ataque
+        if self.frames_ataque > 0:
+            self.frames_ataque -= 1
         else:
-            self.socando = False
-            self.estado = C.NORMAL
+            self.atacando      = False
+            self.estado_ataque = None
             self.dano_aplicado = False
+
+        if self.frames_hurt > 0:
+            self.frames_hurt -= 1
 
         self.vel_y += C.GRAVIDADE
         self.x += delta_x
         self.y += self.vel_y
 
         if self.y >= C.Y_CHAO:
-            self.y = C.Y_CHAO
-            self.vel_y = 0
+            self.y   = C.Y_CHAO
+            self.vel_y  = 0
             self.no_chao = True
+
+        self._atualizar_animacao(self._calcular_estado(delta_x))
+
+    def sofrer_dano(self, quantidade):
+        self.vida -= quantidade
+        if self.vida > 0 and self.vida <= quantidade:
+            self.frames_hurt = self.DURACAO_HURT
+
+    # ------------------------------------------------------------------
+    # Animação
+    # ------------------------------------------------------------------
+
+    def _calcular_estado(self, delta_x):
+        estados_disp = self.assets["personagens"][self.personagem]
+        if self.atacando and self.estado_ataque:
+            return self.estado_ataque
+        if self.frames_hurt > 0:
+            return C.HURT
+        if not self.no_chao and C.PULANDO in estados_disp:
+            return C.PULANDO
+        if delta_x != 0:
+            return C.ANDANDO
+        return C.NORMAL
+
+    def _atualizar_animacao(self, novo_estado):
+        if novo_estado != self.estado:
+            self.estado        = novo_estado
+            self.frame_anim    = 0
+            self.contador_anim = 0
+            return
+
+        # Pulo: frame mapeado pela velocidade vertical (0=subindo → último=caindo)
+        if self.estado == C.PULANDO:
+            n = len(self.assets["personagens"][self.personagem][C.PULANDO])
+            t = max(0.0, (self.vel_y - C.IMPULSO_PULO) / (-C.IMPULSO_PULO * 2))
+            self.frame_anim = min(int(t * n), n - 1)
+            return
+
+        self.contador_anim += 1
+        if self.contador_anim >= C.ANIM_VELOCIDADE:
+            self.contador_anim = 0
+            n = len(self.assets["personagens"][self.personagem][self.estado])
+            self.frame_anim = (self.frame_anim + 1) % n
+
+    # ------------------------------------------------------------------
+    # Colisão
+    # ------------------------------------------------------------------
 
     def get_mascara_corpo(self):
         key = self.estado if self.virado else self.estado + "_flip"
         return self.assets["mascaras"][self.personagem][key], self.x, self.y
 
-    def get_mascara_soco(self):
-        key = C.SOCO + "_delta" if self.virado else C.SOCO + "_delta_flip"
-        return self.assets["mascaras"][self.personagem][key], self.x, self.y
+    def get_mascara_ataque(self):
+        """Retorna a máscara delta do golpe atual (None para super)."""
+        if self.estado_ataque not in _ATAQUES_CORPO:
+            return None, None, None
+        key = self.estado_ataque + "_delta" if self.virado else self.estado_ataque + "_delta_flip"
+        mascara = self.assets["mascaras"][self.personagem].get(key)
+        if mascara is None:
+            return None, None, None
+        return mascara, self.x, self.y
 
     def atualizar_direcao(self, outro_x):
         self.virado = self.x < outro_x
 
     def get_hitbox_jogador(self):
-        offset = C.HITBOX_OFFSET
-        size = C.HITBOX_SIZE
-
-        offset = C.mundo_p_tela(offset[0], offset[1])
-        size = C.mundo_p_tela(size[0], size[1])
-
+        offset   = C.mundo_p_tela(*C.HITBOX_OFFSET)
+        size     = C.mundo_p_tela(*C.HITBOX_SIZE)
         offset_x = offset[0] if self.virado else C.SPRITE_LARGURA - offset[0] - size[0]
         return pygame.Rect(self.x + offset_x, self.y + offset[1], size[0], size[1])
 
-    def get_hitbox_soco(self):
-        offset = C.SOCO_OFFSET
-        size = C.SOCO_SIZE
-
-        offset = C.mundo_p_tela(offset[0], offset[1])
-        size = C.mundo_p_tela(size[0], size[1])
-
-        offset_x = offset[0] if self.virado else C.SPRITE_LARGURA - offset[0] - size[0]
-        return pygame.Rect(self.x + offset_x, self.y + offset[1], size[0], size[1])
+    # ------------------------------------------------------------------
+    # Desenho
+    # ------------------------------------------------------------------
 
     def desenhar(self, tela):
-        sprite = self.assets["personagens"][self.personagem][self.estado]
+        frames = self.assets["personagens"][self.personagem][self.estado]
+        sprite = frames[min(self.frame_anim, len(frames) - 1)]
         if not self.virado:
             sprite = pygame.transform.flip(sprite, True, False)
         tela.blit(sprite, (self.x, self.y))
