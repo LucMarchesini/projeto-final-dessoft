@@ -48,6 +48,7 @@ NORMAL     = "normal"
 ANDANDO    = "andando"
 PULANDO    = "pulando"
 HURT       = "hurt"
+AGACHANDO  = "agachando"
 SOCO       = "soco"
 CHUTE      = "chute"
 SOCO_FORTE = "soco_forte"
@@ -98,6 +99,7 @@ P1_CONTROLES = {
     "direita":    pygame.K_RIGHT,
     "esquerda":   pygame.K_LEFT,
     "pulo":       pygame.K_UP,
+    "agachar":    pygame.K_DOWN,
     "soco":       pygame.K_SPACE,
     "chute":      pygame.K_z,
     "soco_forte": pygame.K_x,
@@ -110,6 +112,7 @@ P2_CONTROLES = {
     "direita":    pygame.K_d,
     "esquerda":   pygame.K_a,
     "pulo":       pygame.K_w,
+    "agachar":    pygame.K_s,
     "soco":       pygame.K_f,
     "chute":      pygame.K_g,
     "soco_forte": pygame.K_h,
@@ -118,4 +121,4 @@ P2_CONTROLES = {
 P2_START = (-140, 300)
 
 # --- Debug ---
-DEBUG = False
+DEBUG = True

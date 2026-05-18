@@ -52,6 +52,7 @@ class Jogador:
         # --- Física ---
         self.vel_y   = 0
         self.no_chao = True
+        self.agachado = False
 
         self.controles = controles
         self.assets    = assets
@@ -64,13 +65,24 @@ class Jogador:
     # ------------------------------------------------------------------
 
     def atualizar(self, teclas):
-        delta_x = 0
-        if teclas[self.controles["direita"]]:
-            delta_x += C.VELOCIDADE
-        if teclas[self.controles["esquerda"]]:
-            delta_x -= C.VELOCIDADE
+        # Agachar (somente no chão, sem estar atacando)
+        tecla_agachar = self.controles.get("agachar")
+        self.agachado = (
+            bool(tecla_agachar)
+            and self.no_chao
+            and not self.atacando
+            and teclas[tecla_agachar]
+        )
 
-        if teclas[self.controles["pulo"]] and self.no_chao:
+        # Movimento bloqueado ao agachar
+        delta_x = 0
+        if not self.agachado:
+            if teclas[self.controles["direita"]]:
+                delta_x += C.VELOCIDADE
+            if teclas[self.controles["esquerda"]]:
+                delta_x -= C.VELOCIDADE
+
+        if teclas[self.controles["pulo"]] and self.no_chao and not self.agachado:
             self.vel_y   = C.IMPULSO_PULO
             self.no_chao = False
 
@@ -85,8 +97,8 @@ class Jogador:
             if tecla and not teclas[tecla]:
                 self.disponivel[t] = True
 
-        # Disparar novo ataque (somente se não está atacando)
-        if not self.atacando:
+        # Disparar novo ataque (bloqueado ao agachar)
+        if not self.atacando and not self.agachado:
             for t in _TODOS_ATAQUES:
                 tecla = self.controles.get(t)
                 if tecla and teclas[tecla] and self.disponivel[t] and self.cooldowns[t] == 0:
@@ -127,7 +139,7 @@ class Jogador:
 
     def sofrer_dano(self, quantidade):
         self.vida -= quantidade
-        if self.vida > 0 and self.vida <= quantidade:
+        if self.vida > 0:
             self.frames_hurt = self.DURACAO_HURT
 
     # ------------------------------------------------------------------
@@ -142,6 +154,8 @@ class Jogador:
             return C.HURT
         if not self.no_chao and C.PULANDO in estados_disp:
             return C.PULANDO
+        if self.agachado:
+            return C.NORMAL   # usa animação idle, sprite desenhado comprimido
         if delta_x != 0:
             return C.ANDANDO
         return C.NORMAL
@@ -191,7 +205,11 @@ class Jogador:
         offset   = C.mundo_p_tela(*C.HITBOX_OFFSET)
         size     = C.mundo_p_tela(*C.HITBOX_SIZE)
         offset_x = offset[0] if self.virado else C.SPRITE_LARGURA - offset[0] - size[0]
-        return pygame.Rect(self.x + offset_x, self.y + offset[1], size[0], size[1])
+        h = size[1]
+        if self.agachado:
+            novo_h = int(h * 0.6)
+            return pygame.Rect(self.x + offset_x, self.y + offset[1] + h - novo_h, size[0], novo_h)
+        return pygame.Rect(self.x + offset_x, self.y + offset[1], size[0], h)
 
     # ------------------------------------------------------------------
     # Desenho
@@ -202,4 +220,10 @@ class Jogador:
         sprite = frames[min(self.frame_anim, len(frames) - 1)]
         if not self.virado:
             sprite = pygame.transform.flip(sprite, True, False)
-        tela.blit(sprite, (self.x, self.y))
+        if self.agachado:
+            orig_h = sprite.get_height()
+            novo_h = int(orig_h * 0.6)
+            sprite = pygame.transform.scale(sprite, (sprite.get_width(), novo_h))
+            tela.blit(sprite, (self.x, self.y + orig_h - novo_h))
+        else:
+            tela.blit(sprite, (self.x, self.y))
